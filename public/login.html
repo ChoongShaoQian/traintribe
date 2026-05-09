@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In — TrainTribe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/shared.css" />
+</head>
+<body class="auth-page">
+
+<div class="auth-card">
+  <a href="/" class="auth-logo">
+    <div class="logo-icon"><svg width="14" height="18" viewBox="0 0 14 20" fill="white"><path d="M9 0L1 11.5H6.5L4 20 13 8.5H7.5z"/></svg></div>
+    Train<span>Tribe</span>
+  </a>
+
+  <h1>Welcome back</h1>
+  <p class="subtitle">Log in to find your training partners.</p>
+
+  <div class="error-msg" id="err"></div>
+
+  <form id="loginForm">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@soton.ac.uk" required autocomplete="email" />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password" />
+    </div>
+    <button type="submit" class="btn btn-primary btn-full" id="submitBtn">Log In</button>
+  </form>
+
+  <p class="auth-footer">
+    Don't have an account? <a href="/signup.html">Sign up free</a>
+  </p>
+</div>
+
+<script src="/app.js"></script>
+<script>
+  // If already logged in, skip to dashboard
+  if (getToken()) window.location.href = '/dashboard.html';
+
+  document.getElementById('loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const err = document.getElementById('err');
+    const btn = document.getElementById('submitBtn');
+    err.classList.remove('show');
+    btn.disabled = true;
+    btn.textContent = 'Logging in…';
+
+    try {
+      const data = await api('POST', '/auth/login', {
+        email:    document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value
+      });
+      setSession(data.token, data.name, data.onboarded);
+      if (!data.onboarded)       window.location.href = '/onboarding.html';
+      else if (data.hasSession)  window.location.href = '/dashboard.html';
+      else                       window.location.href = '/today.html';
+    } catch (ex) {
+      err.textContent = ex.message;
+      err.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Log In';
+    }
+  });
+</script>
+</body>
+</html>
