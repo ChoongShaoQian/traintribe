@@ -184,4 +184,93 @@ app.get('/api/connect/:id', auth, (req, res) => {
   res.json({ email: user.email, name: user.name });
 });
 
+// ── Admin ─────────────────────────────────────────────────
+const ADMIN_KEY = process.env.ADMIN_KEY || 'tt-admin-2026';
+
+app.get('/admin', (req, res) => {
+  if (req.query.key !== ADMIN_KEY) {
+    return res.send(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>Admin — TrainTribe</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,sans-serif;background:#0D0D1A;color:#E8E8F0;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.card{background:#181830;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:40px 36px;width:100%;max-width:360px}
+h1{font-size:20px;font-weight:800;color:#fff;margin-bottom:6px}p{font-size:13px;color:#8888AA;margin-bottom:24px}
+form{display:flex;flex-direction:column;gap:12px}
+input{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;font-size:15px;color:#fff;outline:none;font-family:inherit}
+button{padding:13px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:#FF4D00;color:#fff;font-family:inherit}
+</style></head><body>
+<div class="card"><h1>🔐 Admin Panel</h1><p>TrainTribe owner access only.</p>
+<form method="GET" action="/admin">
+<input type="password" name="key" placeholder="Admin password" autofocus/>
+<button type="submit">Enter</button>
+</form></div></body></html>`);
+  }
+
+  const db  = readDb();
+  const tod = today();
+  const DISC = { hyrox:'🏋️ HYROX', running:'🏃 Running', lifting:'💪 Weightlifting' };
+  const SIZE = { '1':'1 partner', '3':'Up to 3', '3+':'3+' };
+
+  const users = db.users.map(u => {
+    const profile  = db.profiles.find(p => p.userId === u.id) || {};
+    const sessions = db.sessions.filter(s => s.userId === u.id).sort((a,b) => b.date.localeCompare(a.date));
+    const todaySess = sessions.find(s => s.date === tod);
+    return { ...u, profile, sessions, todaySess };
+  });
+
+  const activeToday  = users.filter(u => u.todaySess).length;
+  const onboarded    = users.filter(u => u.profile.onboarded).length;
+
+  const rows = users.map(u => {
+    const discs = (u.profile.disciplines || []).map(d => DISC[d] || d).join(', ') || '—';
+    const sizes = (u.profile.groupSizes  || []).map(s => SIZE[s] || s).join(', ') || '—';
+    const today_info = u.todaySess
+      ? `✅ ${DISC[u.todaySess.discipline] || u.todaySess.discipline} · ${SIZE[u.todaySess.groupSize] || u.todaySess.groupSize}`
+      : '—';
+    const lastSess = u.sessions[0]?.date || '—';
+    return `<tr>
+      <td>${u.name}</td>
+      <td>${u.email}</td>
+      <td>${u.profile.year || '—'}</td>
+      <td>${discs}</td>
+      <td>${sizes}</td>
+      <td>${today_info}</td>
+      <td>${lastSess}</td>
+    </tr>`;
+  }).join('');
+
+  res.send(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>Admin — TrainTribe</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,sans-serif;background:#0D0D1A;color:#E8E8F0;padding:32px 24px}
+h1{font-size:22px;font-weight:900;color:#fff;margin-bottom:4px}
+.sub{font-size:13px;color:#8888AA;margin-bottom:28px}
+.stats{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px}
+.stat{background:#181830;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px 24px;min-width:140px}
+.stat .n{font-size:36px;font-weight:900;color:#fff;line-height:1;margin-bottom:4px}
+.stat .l{font-size:12px;font-weight:600;color:#8888AA;text-transform:uppercase;letter-spacing:.06em}
+.wrap{background:#181830;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th{text-align:left;padding:10px 16px;font-size:11px;font-weight:700;color:#8888AA;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,.2)}
+td{padding:12px 16px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+a{color:#FF4D00;font-size:13px;text-decoration:none}
+</style></head><body>
+<h1>TrainTribe Admin</h1>
+<div class="sub">${tod} · <a href="/admin?key=${ADMIN_KEY}">Refresh</a></div>
+<div class="stats">
+  <div class="stat"><div class="n">${users.length}</div><div class="l">Total accounts</div></div>
+  <div class="stat"><div class="n">${onboarded}</div><div class="l">Onboarded</div></div>
+  <div class="stat"><div class="n">${activeToday}</div><div class="l">Active today</div></div>
+  <div class="stat"><div class="n">${users.length - onboarded}</div><div class="l">Not set up</div></div>
+</div>
+<div class="wrap"><table>
+<thead><tr><th>Name</th><th>Email</th><th>Year</th><th>Disciplines</th><th>Group pref</th><th>Today</th><th>Last session</th></tr></thead>
+<tbody>${rows || '<tr><td colspan="7" style="text-align:center;padding:32px;color:#8888AA">No users yet.</td></tr>'}</tbody>
+</table></div></body></html>`);
+});
+
 app.listen(process.env.PORT || 3000, '0.0.0.0', () => console.log('TrainTribe running'));
