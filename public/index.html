@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrainTribe — University of Southampton</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange:   #FF4D00; --orange-lt: #FF6B35;
+      --navy:     #0D0D1A; --navy-2:    #13132A;
+      --card:     #181830; --border:    rgba(255,255,255,0.08);
+      --muted:    #8888AA; --white:     #FFFFFF; --off-white: #E8E8F0;
+      --green:    #22C55E;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--navy); color: var(--off-white); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Nav */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(13,13,26,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; max-width: 1100px; margin: 0 auto; height: 62px; }
+    .logo { font-size: 19px; font-weight: 800; color: var(--white); display: flex; align-items: center; gap: 8px; }
+    .logo .icon { width: 34px; height: 34px; background: var(--orange); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(255,77,0,0.4); }
+    .logo span { color: var(--orange); }
+    .nav-btns { display: flex; gap: 10px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 11px 22px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all 0.2s; }
+    .btn-primary { background: var(--orange); color: var(--white); }
+    .btn-primary:hover { background: var(--orange-lt); }
+    .btn-ghost { background: transparent; color: var(--off-white); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.25); }
+    .btn-lg { padding: 15px 32px; font-size: 15px; border-radius: 12px; }
+
+    /* Hero */
+    .hero { padding: 130px 24px 90px; text-align: center; position: relative; overflow: hidden; }
+    .hero-glow { position: absolute; top: -150px; left: 50%; transform: translateX(-50%); width: 700px; height: 500px; background: radial-gradient(ellipse, rgba(255,77,0,0.14) 0%, transparent 70%); pointer-events: none; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,77,0,0.1); border: 1px solid rgba(255,77,0,0.3); color: #38BDF8; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; padding: 5px 13px; border-radius: 50px; text-transform: uppercase; margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(34px, 5.5vw, 64px); font-weight: 900; line-height: 1.1; color: var(--white); letter-spacing: -0.02em; margin-bottom: 20px; }
+    .hero h1 .hl { color: var(--orange); }
+    .hero-sub { font-size: clamp(15px, 2vw, 18px); color: var(--muted); max-width: 520px; margin: 0 auto 36px; }
+    .hero-actions { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .disciplines { margin-top: 44px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .disc-chip { display: inline-flex; align-items: center; gap: 7px; background: var(--card); border: 1px solid var(--border); border-radius: 50px; padding: 8px 16px; font-size: 13px; font-weight: 600; }
+
+    /* Steps */
+    .section { padding: 80px 24px; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h2.sec-title { font-size: clamp(24px, 3.5vw, 38px); font-weight: 800; text-align: center; color: var(--white); margin-bottom: 12px; }
+    p.sec-sub { text-align: center; color: var(--muted); font-size: 16px; max-width: 480px; margin: 0 auto 48px; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 28px; }
+    .step { text-align: center; }
+    .step-num { width: 48px; height: 48px; background: var(--orange); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: var(--white); margin: 0 auto 16px; box-shadow: 0 4px 16px rgba(255,77,0,0.35); }
+    .step h3 { font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .step p { font-size: 14px; color: var(--muted); }
+
+    /* Pricing */
+    .pricing-bg { background: var(--navy-2); }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: start; }
+    .price-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 32px 28px; position: relative; }
+    .price-card.pop { border-color: var(--orange); }
+    .pop-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--orange); color: var(--white); font-size: 11px; font-weight: 700; padding: 3px 13px; border-radius: 50px; white-space: nowrap; letter-spacing: 0.06em; text-transform: uppercase; }
+    .tier-tag { font-size: 12px; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+    .tier-name { font-size: 20px; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+    .tier-desc { font-size: 13px; color: var(--muted); margin-bottom: 22px; line-height: 1.55; }
+    .price-row { margin-bottom: 22px; }
+    .price-row .amt { font-size: 44px; font-weight: 900; color: var(--white); line-height: 1; }
+    .price-row .per { font-size: 14px; color: var(--muted); }
+    .price-row .save { display: block; font-size: 12px; color: var(--green); margin-top: 3px; }
+    .feat-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+    .feat-list li { display: flex; align-items: flex-start; gap: 9px; font-size: 13px; color: var(--off-white); }
+    .feat-list li.off { color: var(--muted); }
+    .feat-list .ck { color: var(--green); flex-shrink: 0; margin-top: 1px; }
+    .feat-list .xx { color: var(--muted); flex-shrink: 0; margin-top: 1px; }
+    .price-btn { width: 100%; }
+
+    /* CTA */
+    .cta-wrap { background: linear-gradient(135deg, #080830, #080818 50%, #001828); border-top: 1px solid var(--border); text-align: center; padding: 80px 24px; position: relative; overflow: hidden; }
+    .cta-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 500px; height: 350px; background: radial-gradient(ellipse, rgba(255,77,0,0.12) 0%, transparent 70%); pointer-events: none; }
+    .cta-wrap h2 { font-size: clamp(26px, 4vw, 44px); font-weight: 900; color: var(--white); margin-bottom: 14px; line-height: 1.15; position: relative; }
+    .cta-wrap p { font-size: 16px; color: var(--muted); max-width: 420px; margin: 0 auto 32px; position: relative; }
+    .cta-note { margin-top: 16px; font-size: 13px; color: var(--muted); position: relative; }
+
+    /* Footer */
+    footer { padding: 36px 24px; border-top: 1px solid var(--border); }
+    .foot-inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .foot-copy { font-size: 13px; color: var(--muted); }
+
+    @media (max-width: 600px) {
+      .btn-ghost.nav-hide { display: none; }
+      .foot-inner { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <div class="icon"><svg width="15" height="19" viewBox="0 0 15 21" fill="white"><path d="M10.5 0L2 12.5H7.5L5 21 14.5 8.5H9z"/></svg></div>Train<span>Tribe</span>
+    </a>
+    <div class="nav-btns">
+      <a href="/login.html" class="btn btn-ghost nav-hide">Log In</a>
+      <a href="/signup.html" class="btn btn-primary">Join Free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div style="position:relative;">
+    <div class="badge">🎓 University of Southampton</div>
+    <h1>Find your training partner<br /><span class="hl">at Southampton</span></h1>
+    <p class="hero-sub">Match with HYROX athletes, runners, and lifters who train at your level — and actually show up.</p>
+    <div class="hero-actions">
+      <a href="/signup.html" class="btn btn-primary btn-lg">Join Free — No Card Needed</a>
+      <a href="/login.html" class="btn btn-ghost btn-lg">Log In</a>
+    </div>
+    <div class="disciplines">
+      <div class="disc-chip">🏋️ HYROX</div>
+      <div class="disc-chip">🏃 Running</div>
+      <div class="disc-chip">💪 Weightlifting</div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section">
+  <div class="container">
+    <h2 class="sec-title">How it works</h2>
+    <p class="sec-sub">Three steps to your training partner.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Sign up</h3>
+        <p>Register with your @soton.ac.uk email. Southampton students only.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Set your preferences</h3>
+        <p>Pick your discipline and how many training partners you want.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Get matched</h3>
+        <p>We surface compatible athletes. Reach out and start training.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section pricing-bg" id="pricing">
+  <div class="container">
+    <h2 class="sec-title">Simple pricing</h2>
+    <p class="sec-sub">Start free. Upgrade as your training gets serious.</p>
+    <div class="pricing-grid">
+
+      <!-- Free -->
+      <div class="price-card">
+        <div class="tier-tag">Starter</div>
+        <div class="tier-name">Free</div>
+        <p class="tier-desc">Find your first training partner, no commitment.</p>
+        <div class="price-row">
+          <span class="amt">£0</span>
+          <span class="per"> / forever</span>
+        </div>
+        <ul class="feat-list">
+          <li><span class="ck">✓</span> Profile with 1 discipline</li>
+          <li><span class="ck">✓</span> Browse all matched athletes</li>
+          <li><span class="ck">✓</span> 2 connects per month</li>
+          <li><span class="ck">✓</span> Join group sessions</li>
+          <li class="off"><span class="xx">✗</span> Create sessions</li>
+          <li class="off"><span class="xx">✗</span> Unlimited connects</li>
+        </ul>
+        <a href="/signup.html" class="btn btn-ghost price-btn">Get Started</a>
+      </div>
+
+      <!-- Active — popular -->
+      <div class="price-card pop">
+        <div class="pop-badge">Most Popular</div>
+        <div class="tier-tag">Active</div>
+        <div class="tier-name">Pack Member</div>
+        <p class="tier-desc">For students who train regularly and want full access.</p>
+        <div class="price-row">
+          <span class="amt">£2</span><span class="per">.99 / mo</span>
+          <span class="save">Save 30% — £24.99/yr</span>
+        </div>
+        <ul class="feat-list">
+          <li><span class="ck">✓</span> All 3 disciplines on profile</li>
+          <li><span class="ck">✓</span> Unlimited connects</li>
+          <li><span class="ck">✓</span> Create &amp; host sessions</li>
+          <li><span class="ck">✓</span> Accountability reminders</li>
+          <li><span class="ck">✓</span> Campus leaderboard</li>
+          <li class="off"><span class="xx">✗</span> Training groups</li>
+        </ul>
+        <a href="/signup.html" class="btn btn-primary price-btn">Get Pack Member</a>
+      </div>
+
+      <!-- Pro -->
+      <div class="price-card">
+        <div class="tier-tag">Pro</div>
+        <div class="tier-name">Tribe Leader</div>
+        <p class="tier-desc">Build and run a training group on campus.</p>
+        <div class="price-row">
+          <span class="amt">£4</span><span class="per">.99 / mo</span>
+          <span class="save">Save 30% — £41.99/yr</span>
+        </div>
+        <ul class="feat-list">
+          <li><span class="ck">✓</span> Everything in Pack Member</li>
+          <li><span class="ck">✓</span> Create &amp; manage training groups</li>
+          <li><span class="ck">✓</span> Priority matching</li>
+          <li><span class="ck">✓</span> Full progress tracking</li>
+          <li><span class="ck">✓</span> Verified Tribe Leader badge</li>
+          <li><span class="ck">✓</span> Early access to new features</li>
+        </ul>
+        <a href="/signup.html" class="btn btn-ghost price-btn">Become a Leader</a>
+      </div>
+
+    </div>
+    <p style="text-align:center; margin-top:24px; font-size:13px; color:var(--muted);">Valid @soton.ac.uk email required to register.</p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-wrap">
+  <div class="cta-glow"></div>
+  <h2>Your training partner is<br />already on campus.</h2>
+  <p>They're just waiting to be found.</p>
+  <a href="/signup.html" class="btn btn-primary btn-lg">Join TrainTribe Free</a>
+  <p class="cta-note">Free forever · No credit card · @soton.ac.uk email required</p>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <a href="/" class="logo" style="font-size:16px;">
+      <div class="icon" style="width:26px;height:26px;font-size:13px;">⚡</div>Train<span>Tribe</span>
+    </a>
+    <p class="foot-copy">© 2026 TrainTribe · University of Southampton pilot</p>
+  </div>
+</footer>
+
+</body>
+</html>
